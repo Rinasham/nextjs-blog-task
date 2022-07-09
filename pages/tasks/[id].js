@@ -20,6 +20,7 @@ export default function TaskDetailPage({ taskDetail }) {
 
   useEffect(() => {
     mutate();
+    console.log("mutate in Effect");
   }, []);
 
   if (router.isFallback || !taskDetail) {

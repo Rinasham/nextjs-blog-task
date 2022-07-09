@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useEffect } from "react";
 import useSWR from "swr";
 import Layout from "../components/Layout";
 import Task from "../components/Task";
@@ -14,20 +15,36 @@ export default function TaskPage({ sortedTasks }) {
   // useSWRから返される値をtasksという名前で受け取る
   // mutate: キャッシュされたデータを更新する関数
   // fallbackData: 初回レンダー時に取得した値をセット。
+  // const { data: tasks, mutate } = useSWR(apiURL, fetcher, {
+  //   fallbackData: sortedTasks,
+  // });
+
+  // // tasksに更新追加されていくデータを日付でソート
+  // const sortedNewTasks = tasks?.sort(
+  //   (a, b) => new Date(b.created_at) - new Date(a.created_at)
+  // );
+
+  //================================
+
   const { data: tasks, mutate } = useSWR(apiURL, fetcher, {
     fallbackData: sortedTasks,
   });
 
-  // tasksに更新追加されていくデータを日付でソート
   const sortedNewTasks = tasks?.sort(
     (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
 
+  useEffect(() => {
+    mutate();
+  }, []);
+
   return (
     <Layout title="Task Page">
       <ul>
-        {sortedTasks &&
-          sortedNewTasks.map((task) => <Task key={task.id} task={task} />)}
+        {sortedNewTasks &&
+          sortedNewTasks.map((task) => (
+            <Task key={task.id} task={task} mutate={mutate} />
+          ))}
       </ul>
       <Link href="/main-page">
         <div className="flex cursor-pointer mt-12">
