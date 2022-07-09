@@ -1,0 +1,62 @@
+import Link from "next/link";
+import useSWR from "swr";
+import Layout from "../components/Layout";
+import Task from "../components/Task";
+import { getAllTasksData } from "../lib/getTasks";
+
+const fetcher = (url) => {
+  fetch(url).then((res) => res.json());
+};
+
+const apiURL = `${process.env.NEXT_PUBLIC_RESTAPI_URL}api/list-task/`;
+
+export default function TaskPage({ sortedTasks }) {
+  // useSWRから返される値をtasksという名前で受け取る
+  // mutate: キャッシュされたデータを更新する関数
+  // fallbackData: 初回レンダー時に取得した値をセット。
+  const { data: tasks, mutate } = useSWR(apiURL, fetcher, {
+    fallbackData: sortedTasks,
+  });
+
+  // tasksに更新追加されていくデータを日付でソート
+  const sortedNewTasks = tasks?.sort(
+    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+  );
+
+  return (
+    <Layout title="Task Page">
+      <ul>
+        {sortedTasks &&
+          sortedNewTasks.map((task) => <Task key={task.id} task={task} />)}
+      </ul>
+      <Link href="/main-page">
+        <div className="flex cursor-pointer mt-12">
+          <svg
+            className="w-6 h-6 mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+            ></path>
+          </svg>
+          <span>Back To Main</span>
+        </div>
+      </Link>
+    </Layout>
+  );
+}
+
+export async function getStaticProps() {
+  const sortedTasks = await getAllTasksData();
+
+  return {
+    props: { sortedTasks },
+    revalidate: 3,
+  };
+}
