@@ -6,7 +6,7 @@ import { StateContext } from "../conetxt/StateContext";
 // 更新、削除にはJWTを使って認証をしている
 const cookie = new Cookie();
 
-export default function Task({ task, mutate }) {
+export default function Task({ task, mutate, tasks }) {
   const { setSelectedTask } = useContext(StateContext);
 
   // 削除リクエスト
@@ -28,7 +28,8 @@ export default function Task({ task, mutate }) {
       .catch((err) => {
         console.log(err);
       });
-    mutate();
+    // mutate(`${process.env.NEXT_PUBLIC_RESTAPI_URL}api/list-task/`);
+    mutate(tasks.filter((c) => c.id !== task.id));
     console.log("mutate実行");
   };
 
@@ -52,7 +53,7 @@ export default function Task({ task, mutate }) {
         >
           <path
             strokeLinecap="round"
-            strokeWnejoin="round"
+            strokeLinejoin="round"
             strokeWidth="2"
             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
           ></path>

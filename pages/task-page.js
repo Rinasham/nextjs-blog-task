@@ -28,9 +28,9 @@ export default function TaskPage({ sortedTasks }) {
     (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
 
-  useEffect(() => {
-    mutate();
-  }, []);
+  // useEffect(() => {
+  //   mutate();
+  // }, []);
 
   return (
     <StateContextProvider>
@@ -38,8 +38,8 @@ export default function TaskPage({ sortedTasks }) {
         <TaskForm taskCreated={mutate} />
         <ul>
           {tasks &&
-            sortedNewTasks.map((task) => (
-              <Task key={task.id} task={task} mutate={mutate} />
+            tasks.map((task) => (
+              <Task key={task.id} task={task} mutate={mutate} tasks={tasks} />
             ))}
         </ul>
         <Link href="/main-page">
